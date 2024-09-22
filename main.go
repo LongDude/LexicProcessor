@@ -12,24 +12,26 @@ func main() {
 	// Creating window
 	window := widgets.NewQMainWindow(nil, 0)
 	window.SetMinimumSize2(250, 200)
-	window.SetWindowTitle("Hello Widget Example")
 
-	// Creating regular widget and centering
-	widget := widgets.NewQWidget(nil, 0)
-	widget.SetLayout(widgets.NewQVBoxLayout())
-	window.SetCentralWidget(widget)
+	// Creating root widget
+	root := widgets.NewQWidget(nil, 0)
+	root.SetLayout(widgets.NewQHBoxLayout())
+	window.SetCentralWidget(root)
 
-	// LineEdit with placeholding text
-	input := widgets.NewQLineEdit(nil)
-	input.SetPlaceholderText("Placeholder text")
-	widget.Layout().AddWidget(input)
+	// Left (editing) window
+	edit := widgets.NewQTextEdit(nil)
+	root.Layout().AddWidget(edit)
 
-	// Creating button
-	button := widgets.NewQPushButton2("Click", nil)
-	button.ConnectClicked(func(bool) {
-		widgets.QMessageBox_Warning(nil, "Succass", input.Text(), widgets.QMessageBox__Ok, widgets.QMessageBox__Ok)
-	})
-	widget.Layout().AddWidget(button)
+	// Right(results) window
+	analysis := widgets.NewQWidget(nil, 0)
+	analysis.SetLayout(widgets.NewQVBoxLayout())
+	root.Layout().AddWidget(analysis)
+
+	// AnalysisResult window
+	// TODO
+
+	// AnalysisStats(bottom) window
+	// TODO
 
 	window.Show()
 	app.Exec()
