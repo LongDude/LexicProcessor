@@ -1,0 +1,54 @@
+THIS FILE IS USER FOR REGEX TEST ONLY
+https://regex101.com/r/zHki94/1
+COMMENTS
+test test test
+# test test
+tes test #test
+""" tes tes tes 
+awd awd awd awd"""
+''' tes tes tes '''
+
+DELIMETERS
+(       )       [       ]       {       }
+,       :       .       `              ;
+''  ""       \       @
+
+OPERATORS
+= +=      -=      *=      /=      //=     %=
+<=      |=      ^=      >>=     <<=     **=
++    -    ~    *    **    /    //
+%    <<    >>    &    |    ^ &= |=
+and    or    not    in
+is    <   >    !=
+==    <=    >=
+
+KEYWORDS
+       del       global            with
+as        elif      if                 yield
+assert    else      import      pass     
+break     except              raise    
+class     finally             return   
+continue  for       lambda      try
+def       from      nonlocal    while
+
+LITERALS
+True None False
+"string s"
+'some other string'
+"multiline\
+string"
+23 45 12 # integer literals
+2.3 .3 7. # float literals
+123.2E+3
+123.2
+.2e-2
+
+0b0 0x0efa 0o0 # byte/hex/octo literals
+
+IDENTIFICATORS
+_1wa23231
+wa_sq
+2_1WASDsasd
+_
+
+test.string()
