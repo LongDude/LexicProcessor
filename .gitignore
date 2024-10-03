@@ -2,3 +2,4 @@ qtbox/*
 qtbox
 .venv
 LexicProcessor*
+log/
