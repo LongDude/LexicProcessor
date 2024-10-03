@@ -4,7 +4,6 @@ from enum import Enum
 
 LOGGING =  True
 SAVE_TO_FILE = True
-PRINT_RES = True
 
 class TokenType(int, Enum):
     COMMENT = 0
