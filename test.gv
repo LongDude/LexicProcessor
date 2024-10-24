@@ -1,0 +1,9 @@
+// Test diagramm
+digraph {
+	A [label="First node"]
+	B [label="Second node"]
+	C [label="Third node"]
+	A -> B
+	A -> C
+	B -> C [constraint=false]
+}
