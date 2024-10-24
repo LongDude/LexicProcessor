@@ -16,6 +16,7 @@ class TokenType(int, Enum):
     OPERATOR = 4
     KEYWORD = 5
     IDENTIFIER = 6
+    ENTERS = 7
 
 class _CommentSubTypes(int, Enum):
     SINGLELINE = 0
@@ -36,7 +37,13 @@ class _BracketsType(int, Enum):
     OPEN_SQBRAKETS = 4
     CLOSE_SQBRACKETS = 5
 
+class _DividerType(int, Enum):
+    DOT = 0
+    COLLON = 1
+    BRACKET = 2
+
 class Subtypes:
     CommentSubTypes = _CommentSubTypes
     NumbersSubType = _NumbersSubType
     BracketsSubType = _BracketsType
+    DividerSubType = _DividerType

@@ -54,15 +54,20 @@ class LexicAnalyzer(object):
         ident_level = 0
         result = []
         remainder = []
+
         for m in LexicAnalyzer.__first_filter.finditer(text):
             if   m.group(1)  is not None: result.append(tupl(m, 1, TokenType.COMMENT, wrapper=LexicAnalyzer.__trim_multiline_comments)) # Многострочные комментарии
             elif m.group(2)  is not None: result.append(tupl(m, 2, TokenType.COMMENT, wrapper=LexicAnalyzer.__trim_multiline_comments)) # Многострочные комментарии
             elif m.group(3)  is not None: result.append(tupl(m, 3, TokenType.STRING_LITERAL, wrapper=LexicAnalyzer.__trim_multiline_strings)) # Multiline string
             elif m.group(4)  is not None: result.append(tupl(m, 4, TokenType.STRING_LITERAL, wrapper=LexicAnalyzer.__trim_multiline_strings)) # Multiline string
             elif m.group(5)  is not None: result.append(tupl(m, 5, TokenType.COMMENT, Subtypes.CommentSubTypes.SINGLELINE))
-            elif m.group(6)  is not None: result.append(tupl(m, 6, TokenType.DIVIDER))
+            elif m.group(6)  is not None:
+                result.append(tupl(m, 6, TokenType.DIVIDER))
             elif m.group(7)  is not None: ident_level = len(m.group(7).replace("\t", " "*TAB_TO_SPACES))
-            elif m.group(8)  is not None: ident_level = 0
+            elif m.group(8)  is not None: 
+                ident_level = 0 
+                if result[-1][3] != TokenType.ENTERS: 
+                    result.append(tupl(m, 8, TokenType.ENTERS))
             elif m.group(9)  is not None: pass # отсечка
             elif m.group(10)  is not None: result.append(tupl(m, 10, TokenType.DIVIDER)) # Brackets
             elif m.group(11)  is not None: result.append(tupl(m, 11, TokenType.OPERATOR))
@@ -98,7 +103,7 @@ class LexicAnalyzer(object):
             if not path.exists():
                 path.mkdir(parents=True)
 
-            tempfile1 = open("log/log" + str(datetime.now()), 'a+')
+            tempfile1 = open("log\\log" + str(datetime.now()).replace(":", "-"), 'a+')
         
         res, rem = LexicAnalyzer.__parse_regex(text)
         if LOGGING:
@@ -117,7 +122,7 @@ class LexicAnalyzer(object):
         return res, rem
 
 if __name__ == "__main__":
-    testfile = open("test.py", 'r')
+    testfile = open("testgroup\\test.py", 'r')
     res, rem = LexicAnalyzer.parse_text(testfile.read())
     
     print("=== RESULT ===", *res, sep="\n")
