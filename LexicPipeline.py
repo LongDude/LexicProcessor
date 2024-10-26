@@ -1,9 +1,9 @@
 from LexicAnalyzer import LexicAnalyzer
 from LexicTreeBuilder import tree_graph, LexicTreeBuilder
 
-PARSE = True
+PARSE = False
 TREE = True
-FILE = "testgroup/fibbonachi_seq.py"
+FILE = "testgroup/test_multi.py"
 
 if PARSE:
     f = open(FILE, 'r')
@@ -12,5 +12,5 @@ if PARSE:
 
 if TREE:
     tree = LexicTreeBuilder('result.json')
-    tree_graph(tree)
+    tree_graph(tree.root)
 

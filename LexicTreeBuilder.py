@@ -6,6 +6,8 @@ import json
 from LexicTokenTypes import *
 
 SHOW_DIAP = True
+PSEUDOELEMENT = True
+
 
 class TokenReader(object):
     __tokens : list = []
@@ -47,7 +49,6 @@ class TreeNode(object):
     @property
     def diap(self): return self.__diap
 
-
 class LexicTreeBuilder(object):
     root : TreeNode
     tokens : list
@@ -67,10 +68,15 @@ class LexicTreeBuilder(object):
             return p + 1
 
         # Oh shit
+
         tokens = self.tokens
+        
         identation = tokens[p][1]
         while p < len(tokens):
             if tokens[p][1] < identation: # If current body block ended
+                if tokens[p][3] == TokenType.ENTERS:
+                    p += 1
+                    continue
                 return p
             
             match tokens[p][3]:
@@ -88,11 +94,14 @@ class LexicTreeBuilder(object):
                             p = self.parse_args(args_root, p)
 
                             p = test_token_val(p, ":")
-                            if tokens[p][0] == TokenType.ENTERS: p += 1
+                            if tokens[p][3] == TokenType.ENTERS: p += 1
 
                             # Recursive build local tree from body block
                             # Inside block can (and would) be parsed as programm itself
-                            body_root = def_root.create_child_named('BODY', None)
+                            if PSEUDOELEMENT:
+                                body_root = def_root.create_child_named('BODY', None)
+                            else:
+                                body_root = def_root
                             p = self.build(body_root, p)
 
                         case 'for':
@@ -119,10 +128,13 @@ class LexicTreeBuilder(object):
 
                             # 5. Finisher
                             p = test_token_val(p, ":")
-                            if tokens[p][0] == TokenType.ENTERS: p += 1
+                            if tokens[p][3] == TokenType.ENTERS: p += 1
 
                             # 6. Inner block
-                            body_root = for_root.create_child_named('BODY', None)
+                            if PSEUDOELEMENT:
+                                body_root = for_root.create_child_named('BODY', None)
+                            else:
+                                body_root = for_root
                             p = self.build(body_root, p)
 
                             if p >= len(tokens): return p
@@ -149,7 +161,10 @@ class LexicTreeBuilder(object):
                             if tokens[p][3] == TokenType.ENTERS: p += 1
 
                             # 4. Function body
-                            body_root = if_root.create_child_named('BODY', None)
+                            if PSEUDOELEMENT:
+                                body_root = if_root.create_child_named('BODY', None)
+                            else:
+                                body_root - if_root
                             p = self.build(body_root, p)
 
                             if p >= len(tokens): return p
@@ -318,7 +333,7 @@ class LexicTreeBuilder(object):
                 if self.tokens[p][3] == TokenType.ENTERS: p += 1
                 if self.tokens[p][3] != TokenType.IDENTIFIER:
                     raise ValueError("Token Error", self.tokens[p])
-                ident_root = ident_root.create_child_auto(self.tokens[0])
+                ident_root = ident_root.create_child_auto(self.tokens[p])
                 p += 1
             elif self.tokens[p][0] == "(":
                 args = ident_root.create_child_named("()", None)
@@ -376,10 +391,11 @@ def tree_graph(node: TreeNode):
     tree_dfs(node, G, lbls)
 
     pos = graphviz_layout(G, 'dot')
-    nx.draw(G, pos, node_size=1000)
+    nx.draw(G, pos, node_size=1000, node_color="lightgray")
     nx.draw_networkx_labels(G, pos, lbls, font_size=8)
     plt.show()
 
 
-o = LexicTreeBuilder('result.json')
-tree_graph(o.root)
+if __name__ == "__main__":
+    o = LexicTreeBuilder('result.json')
+    tree_graph(o.root)

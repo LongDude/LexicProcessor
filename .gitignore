@@ -3,3 +3,5 @@ qtbox
 .venv
 LexicProcessor*
 log/
+log\*
+__pycache__\*
