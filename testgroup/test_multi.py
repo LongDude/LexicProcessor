@@ -7,7 +7,7 @@ def fibbonachi(n: int = 1):
     if n >= 2:
         sequence.append(1)
     for i in range(2, n):
-        sequence.append(sequence[i-1] + sequence[i-2])
+        sequence.append(sequence[i - 1] + sequence[i - 2])
     return sequence
 
 def find_min(a, length):
@@ -16,3 +16,6 @@ def find_min(a, length):
         if a[i] < m:
             m = a[i]
     return m
+
+print(fibbonachi(9))
+print(find_min([9, 7, 2, 3, 5, 1], 6))

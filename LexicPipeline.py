@@ -1,8 +1,11 @@
 from LexicAnalyzer import LexicAnalyzer
 from LexicTreeBuilder import tree_graph, LexicTreeBuilder
+from LexicInterpretator import LexicInterpretator
 
 PARSE = True
 TREE = True
+INTERP = True
+LOGGING =  False
 FILE = "testgroup/test_multi.py"
 
 if PARSE:
@@ -12,5 +15,9 @@ if PARSE:
 
 if TREE:
     tree = LexicTreeBuilder('result.json')
-    tree_graph(tree.root)
+    # tree_graph(tree.root)
 
+    if INTERP:
+        intrp = LexicInterpretator(tree.root)
+        intrp.exec()
+    

@@ -53,6 +53,7 @@ class _MetaSubType(int, Enum):
     LVAL = 6
     FUNC_PARAMS = 7
     INDEX = 8
+    FUNC_CALL = 9
 
 class Subtypes:
     CommentSubTypes = _CommentSubTypes

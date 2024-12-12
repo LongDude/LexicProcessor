@@ -36,7 +36,7 @@ class LexicAnalyzer(object):
     }
 
     __first_filter:re.Pattern = re.compile(r"([']{3}[\s\S]*?[']{3})|([\"]{3}[\s\S]*?[\"]{3})|('{1}.*?(?<!\\)'{1})|(\"{1}.*?(?<!\\)\"{1})|([#].*?$)|((?<=['\"\])}a-z])\.)|(^[ \t]+)|(\n)|(\s+)|([\[\]\{\}\(\),:;\\])|((?:\*{1,2}|\/{1,2}|>{1,2}|<{1,2}|[%&|^!~])=?|={2}|[+-]?=|\b(?:and|or|not|in|is)\b)|((?:\_|[a-z])+[a-z0-9_]*)|([\w\.\+\-`@]+)", flags=re.M | re.S | re.X | re.I)
-    __nums_processor: re.Pattern = re.compile(r"(^\.$)|(^[\+\-]$)|(0b[01]+)|(0o[0-7]+)|(0x[0-9a-f]+)|(^[0-9]+$)|(^[0-9]*\.[0-9]*(?:e[\+\-][0-9]+|e)?$)", flags=re.I)
+    __nums_processor: re.Pattern = re.compile(r"(^\.$)|(^[\+\-]$)|(0b[01]+)|(0o[0-7]+)|(0x[0-9a-f]+)|(^-{0,1}[0-9]+$)|(^[0-9]*\.[0-9]*(?:e[\+\-][0-9]+|e)?$)", flags=re.I)
 
     __multistring_cleaner: re.Pattern = re.compile(r"\s*\\\s")
     __multicomment_cleaner: re.Pattern = re.compile(r"\s{2,}")

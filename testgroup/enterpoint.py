@@ -7,8 +7,8 @@ def fibbonachi(n: int = 1):
     if n >= 2:
         sequence.append(1)
     for i in range(2, n):
-        sequence.append(sequence[i-1] + sequence[i-2])
+        sequence.append(sequence[i - 1] + sequence[i - 2])
     return sequence
 
-m = fibbonachi(2)
+m = fibbonachi(7)
 print(m)

@@ -32,20 +32,24 @@ class TreeNode(object):
         self.label = lbl
         self.__diap = diap
         self.childs = []
+        self.parent = None
         self.t_type = t_type
         self.t_subtype = t_subtype
 
     def create_child_named(self, lbl: str, meta_subtype:Subtypes.MetaSubType = Subtypes.MetaSubType.ABSTRACT):
         child = TreeNode(lbl, t_type=TokenType.META, t_subtype=meta_subtype)
         self.childs.append(child)
+        child.parent = self
         return child
 
     def create_child_auto(self, token:list):
         child = TreeNode(token[0], token[2], token[3], token[4])
         self.childs.append(child)
+        child.parent = self
         return child
     
     def add_child(self, child):
+        child.parent = self
         self.childs.append(child)
 
     @property
@@ -277,7 +281,7 @@ class LexicTreeBuilder(object):
         while p < len(self.tokens):
             match tokens[p][3]: 
                 case TokenType.IDENTIFIER:
-                    elements_list.append(TreeNode(tokens[p][0], tokens[p][2]))
+                    elements_list.append(TreeNode(tokens[p][0], tokens[p][2], tokens[p][3], tokens[p][4]))
                     p += 1
                     p = self.parse_identificator(elements_list[-1], p)
                     await_value = False
@@ -293,6 +297,8 @@ class LexicTreeBuilder(object):
 
                         case "[": # List (identificators already processed indexes)
                             subexpr = container.create_child_named("[]", Subtypes.MetaSubType.GROUP)
+                            p += 1
+                            p = self.parse_expr(subexpr, p)
                             p += 1
 
                         case "(":
@@ -313,7 +319,7 @@ class LexicTreeBuilder(object):
                         return p + 1
 
                 case TokenType.NUMBER_LITERAL | TokenType.STRING_LITERAL:
-                    elements_list.append(TreeNode(tokens[p][0], tokens[p][2]))
+                    elements_list.append(TreeNode(tokens[p][0], tokens[p][2], tokens[p][3], tokens[p][4]))
                     p += 1
                 case TokenType.OPERATOR:
                     operator_root = container.create_child_auto(tokens[p])
