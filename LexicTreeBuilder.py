@@ -5,7 +5,7 @@ from networkx.drawing.nx_pydot import graphviz_layout
 import json
 from LexicTokenTypes import *
 
-SHOW_DIAP = True
+SHOW_DIAP = False
 PSEUDOELEMENT = True
 
 
@@ -28,18 +28,20 @@ class TokenReader(object):
         return self.__tokens
 
 class TreeNode(object):
-    def __init__(self, lbl, diap=[0,0]):
+    def __init__(self, lbl, diap=[0,0], t_type:TokenType=None, t_subtype:Subtypes=None):
         self.label = lbl
         self.__diap = diap
         self.childs = []
+        self.t_type = t_type
+        self.t_subtype = t_subtype
 
-    def create_child_named(self, lbl: str, diap: list = [0,0]):
-        child = TreeNode(lbl, diap)
+    def create_child_named(self, lbl: str, meta_subtype:Subtypes.MetaSubType = Subtypes.MetaSubType.ABSTRACT):
+        child = TreeNode(lbl, t_type=TokenType.META, t_subtype=meta_subtype)
         self.childs.append(child)
         return child
 
     def create_child_auto(self, token:list):
-        child = TreeNode(token[0], token[2])
+        child = TreeNode(token[0], token[2], token[3], token[4])
         self.childs.append(child)
         return child
     
@@ -90,7 +92,7 @@ class LexicTreeBuilder(object):
                             p += 1
 
                             # Bracket block
-                            args_root = def_root.create_child_named('()', None)
+                            args_root = def_root.create_child_named('()', Subtypes.MetaSubType.ARGS)
                             p = self.parse_args(args_root, p)
 
                             p = test_token_val(p, ":")
@@ -99,7 +101,7 @@ class LexicTreeBuilder(object):
                             # Recursive build local tree from body block
                             # Inside block can (and would) be parsed as programm itself
                             if PSEUDOELEMENT:
-                                body_root = def_root.create_child_named('BODY', None)
+                                body_root = def_root.create_child_named('BODY', Subtypes.MetaSubType.BODY)
                             else:
                                 body_root = def_root
                             p = self.build(body_root, p)
@@ -132,7 +134,7 @@ class LexicTreeBuilder(object):
 
                             # 6. Inner block
                             if PSEUDOELEMENT:
-                                body_root = for_root.create_child_named('BODY', None)
+                                body_root = for_root.create_child_named('BODY', Subtypes.MetaSubType.BODY)
                             else:
                                 body_root = for_root
                             p = self.build(body_root, p)
@@ -162,9 +164,9 @@ class LexicTreeBuilder(object):
 
                             # 4. Function body
                             if PSEUDOELEMENT:
-                                body_root = if_root.create_child_named('BODY', None)
+                                body_root = if_root.create_child_named('BODY', Subtypes.MetaSubType.BODY)
                             else:
-                                body_root - if_root
+                                body_root = if_root
                             p = self.build(body_root, p)
 
                             if p >= len(tokens): return p
@@ -198,7 +200,7 @@ class LexicTreeBuilder(object):
                             
                             p = test_token_val(p, ":")
                             if tokens[p][3] == TokenType.ENTERS: p += 1
-                            body_root = while_root.create_child_named("BODY", None)
+                            body_root = while_root.create_child_named("BODY", Subtypes.MetaSubType.BODY)
                             p = self.build(while_root)
                                                                             
                         case 'return':
@@ -238,7 +240,7 @@ class LexicTreeBuilder(object):
                             
             if self.tokens[p][0] == '=':
                 p += 1
-                defVal = identificator.create_child_named('DEFAULT', None)
+                defVal = identificator.create_child_named('DEFAULT', Subtypes.MetaSubType.DEFAULT)
                 p = self.parse_expr(defVal, p)
 
             if self.tokens[p][0] == ',' or self.tokens[p][3] == TokenType.ENTERS:
@@ -290,11 +292,11 @@ class LexicTreeBuilder(object):
                             p += 1
 
                         case "[": # List (identificators already processed indexes)
-                            subexpr = container.create_child_named("[]", None)
+                            subexpr = container.create_child_named("[]", Subtypes.MetaSubType.GROUP)
                             p += 1
 
                         case "(":
-                            subexpr = container.create_child_named("()", None)
+                            subexpr = container.create_child_named("()", Subtypes.MetaSubType.LIST)
                             p += 1
                             p = self.parse_expr(subexpr, p)
 
@@ -316,7 +318,7 @@ class LexicTreeBuilder(object):
                 case TokenType.OPERATOR:
                     operator_root = container.create_child_auto(tokens[p])
                     p += 1
-                    l = operator_root.create_child_named('lval', None)
+                    l = operator_root.create_child_named('lval', Subtypes.MetaSubType.LVAL)
                     for i in elements_list:
                         l.add_child(i)
                         elements_list = []
@@ -336,7 +338,7 @@ class LexicTreeBuilder(object):
                 ident_root = ident_root.create_child_auto(self.tokens[p])
                 p += 1
             elif self.tokens[p][0] == "(":
-                args = ident_root.create_child_named("()", None)
+                args = ident_root.create_child_named("()", Subtypes.MetaSubType.FUNC_PARAMS)
                 p += 1
                 p = self.parse_expr(args, p)
                 p += 1
@@ -347,7 +349,7 @@ class LexicTreeBuilder(object):
             
 
     def parse_index(self, ident_root: TreeNode, p):
-        container = ident_root.create_child_named("[]", None)
+        container = ident_root.create_child_named("[]", Subtypes.MetaSubType.INDEX)
         p += 1
         # Extreme case: [::]                
         if self.tokens[p][0] != ":": # Blanks for indexation
@@ -376,6 +378,9 @@ def tree_dfs(node: TreeNode, graph: nx.Graph, labels:dict, idx=0):
             labels[idx] = node.label
     else:
         labels[idx] = node.label
+
+    if node.t_type:     labels[idx] += '\n' + node.t_type.name
+    if node.t_subtype:  labels[idx] += '\n' + node.t_subtype.name
     graph.add_node(idx)
     curr_idx = idx
     idx += 1
@@ -391,7 +396,7 @@ def tree_graph(node: TreeNode):
     tree_dfs(node, G, lbls)
 
     pos = graphviz_layout(G, 'dot')
-    nx.draw(G, pos, node_size=1000, node_color="lightgray")
+    nx.draw(G, pos, node_size=1300, node_color="lightgray")
     nx.draw_networkx_labels(G, pos, lbls, font_size=8)
     plt.show()
 

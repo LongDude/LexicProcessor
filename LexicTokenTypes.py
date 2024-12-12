@@ -17,6 +17,7 @@ class TokenType(int, Enum):
     KEYWORD = 5
     IDENTIFIER = 6
     ENTERS = 7
+    META = 8 # Появляется при построении дерева для организации
 
 class _CommentSubTypes(int, Enum):
     SINGLELINE = 0
@@ -42,8 +43,20 @@ class _DividerType(int, Enum):
     COLLON = 1
     BRACKET = 2
 
+class _MetaSubType(int, Enum):
+    ABSTRACT = 0
+    ARGS = 1
+    BODY = 2
+    DEFAULT = 3
+    GROUP = 4
+    LIST = 5
+    LVAL = 6
+    FUNC_PARAMS = 7
+    INDEX = 8
+
 class Subtypes:
     CommentSubTypes = _CommentSubTypes
     NumbersSubType = _NumbersSubType
     BracketsSubType = _BracketsType
     DividerSubType = _DividerType
+    MetaSubType = _MetaSubType

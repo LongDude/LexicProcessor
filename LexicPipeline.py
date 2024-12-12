@@ -1,7 +1,7 @@
 from LexicAnalyzer import LexicAnalyzer
 from LexicTreeBuilder import tree_graph, LexicTreeBuilder
 
-PARSE = False
+PARSE = True
 TREE = True
 FILE = "testgroup/test_multi.py"
 
