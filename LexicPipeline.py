@@ -6,7 +6,7 @@ PARSE = True
 TREE = True
 INTERP = True
 LOGGING =  False
-FILE = "testgroup/test_multi.py"
+FILE = "testgroup/factorial.py"
 
 if PARSE:
     f = open(FILE, 'r')
@@ -15,9 +15,8 @@ if PARSE:
 
 if TREE:
     tree = LexicTreeBuilder('result.json')
-    # tree_graph(tree.root)
-
     if INTERP:
         intrp = LexicInterpretator(tree.root)
         intrp.exec()
+    tree_graph(tree.root)
     

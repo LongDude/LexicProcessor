@@ -352,6 +352,7 @@ class LexicTreeBuilder(object):
                 p = self.parse_index(ident_root, p)
             else:
                 return p
+        return p
             
 
     def parse_index(self, ident_root: TreeNode, p):

@@ -12,8 +12,8 @@ class LexicInterpretator(object):
     def __init__(self, tree_root: TreeNode):
         self._root = tree_root
         self._stack = []
-        self._rec_stack = []
-        self._rec_counter = 1
+        self._rec_stack = [0]
+        self._rec_counter = 0
 
     def exec(self):
         '''
@@ -36,13 +36,13 @@ class LexicInterpretator(object):
 
         res = None
         for element in node.childs:
-            if self._rec_counter < rec_level:
+            if self._rec_counter < self._rec_stack[-1]:
                 break
 
             match element.t_type:
                 # Парсим "верхний уровень" функции - доступны только определения функций, выражения типа '=' и вызовы
                 case TokenType.OPERATOR:
-                    self.__parse_expr(element) # Ищем присвоения на данном уровне
+                    res = self.__parse_expr(element) # Ищем присвоения на данном уровне
                 case TokenType.KEYWORD:
                     match element.label:
                         case 'def':
@@ -56,6 +56,7 @@ class LexicInterpretator(object):
                         case 'return':
                             # Особый случай - return составляет кортеж возврата и возвращает на уровень выше
                             res = self.__parse_list(element)
+                            self._rec_counter -= 1
                             break
                         case _:
                             print(f"Unsuppoted body-level keyword: {element.label}")
